@@ -1,0 +1,58 @@
+/* Ensure the navbar spans the full width */
+.navbar {
+  width: 100%;
+  background-color: blue;
+  padding: 10px 20px;
+  color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+/* Ensure the container takes full width */
+.container {
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Make navigation links evenly spread */
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+/* Remove default link styling */
+.nav-links a, .auth-links a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+/* Styling for authentication links */
+.auth-links {
+  display: flex;
+  gap: 15px;
+}
+
+.signin {
+  background-color: white;
+  color: blue;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.register {
+  background-color: green;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.signin:hover {
+  background-color: lightgray;
+}
+
+.register:hover {
+  background-color: darkgreen;
+}

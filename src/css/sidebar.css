@@ -1,0 +1,82 @@
+/* Sidebar Styling */
+.sidebar {
+    background-color: #1a202c; /* Dark Gray */
+    color: white;
+    height: 100vh; /* Full height */
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Collapsed Sidebar */
+  .sidebar.collapsed {
+    width: 60px;
+  }
+  
+  .sidebar.expanded {
+    width: 250px;
+  }
+  
+  /* Navigation Links */
+  .sidebar a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    transition: background 0.2s;
+  }
+  
+  .sidebar a:hover,
+  .sidebar a.active {
+    background-color: #2d3748; /* Slightly lighter gray */
+  }
+  
+  /* Dropdown Sections */
+  .sidebar .dropdown {
+    margin-top: 5px;
+  }
+  
+  .sidebar .dropdown button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .sidebar .dropdown button:hover {
+    background-color: #2d3748;
+  }
+  
+  .sidebar .dropdown-content {
+    margin-left: 10px;
+    display: none;
+  }
+  
+  .sidebar .dropdown.open .dropdown-content {
+    display: block;
+  }
+  
+  /* Main Content */
+  .main-content {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease-in-out;
+    padding: 20px;
+  }
+  
+  .main-content.collapsed {
+    margin-left: 60px;
+  }
+  

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAuth } from "react-oidc-context";
 
-export default function Home() {
+export default function Customer() {
       const auth = useAuth();
     
       const signOutRedirect = () => {
@@ -26,17 +26,15 @@ export default function Home() {
             <pre> ID Token: {auth.user?.id_token} </pre>
             <pre> Access Token: {auth.user?.access_token} </pre>
             <pre> Refresh Token: {auth.user?.refresh_token} </pre>
-            <h1>This is Authndicated User..</h1>
-            <button onClick={() => auth.removeUser()}>Sign out</button>
-            
+    
+            <Customer/>
           </div>
         );
       }
 
   return (
     <div>
-      <button onClick={() => auth.signinRedirect()}>Sign in</button>
-      <button onClick={() => signOutRedirect()}>Sign out</button>
+      <h1>Customer Profile Here</h1>
     </div>
   );
 }
