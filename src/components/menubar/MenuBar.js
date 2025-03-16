@@ -10,27 +10,21 @@ const MenuBar = () => {
     return <div>Loading...</div>;
   }
 
-  if (auth.error) {
-    return <div>Encountering error... {auth.error.message}</div>;
-  }
-
   if (auth.isAuthenticated) {
     return (
       <div>
         <nav className="navbar">
-          <div className="container">
             <div className="nav-links">
-              <Link to="/">Home</Link>
-              <Link to="/about">About</Link>
-              <Link to="/services">Services</Link>
-              <Link to="/products">Products</Link>
-              <Link to="/contact">Contact</Link>
+              <Link to="/"></Link>
+              <Link to="/about"></Link>
+              <Link to="/services"></Link>
+              <Link to="/products"></Link>
+              <Link to="/contact"></Link>
             </div>
             <div className="auth-links">
               <button onClick={() => auth.removeUser()}>Sign out</button>
             </div>
-          </div>
-      </nav>
+        </nav>
       </div>
     );
   }
@@ -39,10 +33,10 @@ const MenuBar = () => {
     <nav className="navbar">
       <div className="container">
         <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/customer">Customer</Link>
-          <Link to="/counsoller">Counsellor</Link>
-          <Link to="/about">About</Link>
+          <Link to="/"></Link>
+          <Link to="/customer"></Link>
+          <Link to="/counsoller"></Link>
+          <Link to="/about"></Link>
         </div>
         <div className="auth-links">
           <button onClick={() => auth.signinRedirect()}>Sign in</button>

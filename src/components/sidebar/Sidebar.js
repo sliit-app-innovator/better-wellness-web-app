@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { Menu, Users, Calendar, ChevronDown, ChevronUp } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { Menu, ChevronDown, ChevronUp } from "lucide-react";
 import "../../css/sidebar.css"; 
 
 const Sidebar = () => {

@@ -1,7 +1,7 @@
 /* Ensure the navbar spans the full width */
 .navbar {
   width: 100%;
-  background-color: blue;
+  background-color: rgb(255, 145, 0);
   padding: 10px 20px;
   color: white;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -37,7 +37,7 @@
 
 .signin {
   background-color: white;
-  color: blue;
+  color: rgb(255, 136, 0);
   padding: 5px 10px;
   border-radius: 5px;
 }
