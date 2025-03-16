@@ -30,19 +30,20 @@ const MenuBar = () => {
   }
 
   return (
-    <nav className="navbar">
-      <div className="container">
-        <div className="nav-links">
-          <Link to="/"></Link>
-          <Link to="/customer"></Link>
-          <Link to="/counsoller"></Link>
-          <Link to="/about"></Link>
+      <nav className="navbar">
+        <div className="navbar-container">
+          <div className="nav-links">
+            <Link to="/">Home</Link>
+            <Link to="/about">About</Link>
+            <Link to="/services">Services</Link>
+            <Link to="/products">Products</Link>
+            <Link to="/contact">Contact</Link>
+          </div>
+          <div className="auth-links">
+            <button onClick={() => auth.removeUser()}>Sign out</button>
+          </div>
         </div>
-        <div className="auth-links">
-          <button onClick={() => auth.signinRedirect()}>Sign in</button>
-        </div>
-      </div>
-    </nav>
+      </nav>
   );
 }
 export default MenuBar;

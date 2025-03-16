@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuth } from "react-oidc-context";
 
 export default function Customer() {
@@ -34,7 +34,7 @@ export default function Customer() {
 
   return (
     <div>
-      <h1>Customer Profile Here</h1>
+      <h1>Customer Appoimtmemt Here</h1>
     </div>
   );
 }

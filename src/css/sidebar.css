@@ -26,6 +26,7 @@
   .sidebar a {
     display: block;
     padding: 10px 15px;
+    margin-top: 20px;
     text-decoration: none;
     color: white;
     border-radius: 5px;
@@ -61,7 +62,9 @@
   }
   
   .sidebar .dropdown-content {
-    margin-left: 10px;
+    margin-left: 15px;
+    margin-top: 1px;
+    margin-bottom: 1px;
     display: none;
   }
   
@@ -73,7 +76,7 @@
   .main-content {
     margin-left: 250px;
     transition: margin-left 0.3s ease-in-out;
-    padding: 20px;
+    padding: 10px;
   }
   
   .main-content.collapsed {
