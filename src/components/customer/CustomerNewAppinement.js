@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "react-oidc-context";
 import "../../css/makeAppointment.css"; 
 import axios from 'axios';
+import apiConfig from '../../config/apiConfig';
 
 export default function CustomerNewAppinement() {
   const auth = useAuth();
@@ -32,7 +33,7 @@ export default function CustomerNewAppinement() {
   useEffect(() => {
     const fetchCounsellors = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/better-wellness/counsellor'); 
+        const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/counsellor`); 
         setCounsellors(response.data.counsellors);
       } catch (err) {
         setError('Unexpected error occurred while fetching counsellors. Please try again later.');
@@ -67,7 +68,7 @@ export default function CustomerNewAppinement() {
         setAvailableTimes([]);
         setLoadingTimes(true);
         try {
-          const response = await axios.get(`http://localhost:8081/better-wellness/availability?counsellorId=${selected.id}`);
+          const response = await axios.get(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL}/availability?counsellorId=${selected.id}`);
           setAvailableTimes(response.data.slots || []);
         } catch (err) {
           setError('Failed to load availability. Please try again later.');
@@ -109,7 +110,7 @@ const handleSubmit = async (e) => {
     };
 
     try {
-      const response = await axios.post('http://localhost:8081/better-wellness/appointment', payload); // ADD await ✅
+      const response = await axios.post(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL  }/appointment`, payload); // ADD await ✅
       setSuccess('Appointment booked successfully!');
       // Reset form
       setFormData({
@@ -125,6 +126,26 @@ const handleSubmit = async (e) => {
       setError('Failed to submit appointment. Please try again later.');
     }
 };
+
+if (auth.isLoading) {
+  return <div>Loading...</div>;
+}
+
+if (auth.error) {
+  return <div>Encountering error... {auth.error.message}</div>;
+}
+
+if (auth.isAuthenticated) {
+  return (
+    <div>
+      <pre> Hello: {auth.user?.profile.email} </pre>
+      <pre> ID Token: {auth.user?.id_token} </pre>
+      <pre> Access Token: {auth.user?.access_token} </pre>
+      <pre> Refresh Token: {auth.user?.refresh_token} </pre>
+
+    </div>
+  );
+}
 
   return (
     <div className="page-wrapper">
@@ -174,19 +195,25 @@ const handleSubmit = async (e) => {
                   <div>Loading availability...</div>
                 ) : (
                   <select
-                    name="sessionTime"
-                    value={formData.sessionTime}
-                    onChange={handleChange}
-                    required
-                    disabled={availableTimes.length === 0}
-                  >
-                    <option value="">-- Choose Time --</option>
-                    {availableTimes.map((slot, index) => (
-                      <option key={index} value={slot.id}>
-                        Date {slot.date} : From {slot.startTime} → To {slot.endTime} 
-                      </option>
-                    ))}
-                  </select>
+                      name="sessionTime"
+                      value={formData.sessionTime}
+                      onChange={handleChange}
+                      required
+                      disabled={availableTimes.length === 0}
+                    >
+                      {availableTimes.length === 0 ? (
+                        <option value="">No available sessions</option>
+                      ) : (
+                        <>
+                          <option value="">-- Choose Time --</option>
+                          {availableTimes.map((slot, index) => (
+                            <option key={index} value={slot.id}>
+                              Date {slot.date} : From {slot.startTime} → To {slot.endTime}
+                            </option>
+                          ))}
+                        </>
+                      )}
+                    </select>
                 )}
               </div>
 
