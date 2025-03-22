@@ -24,6 +24,7 @@ export default function CustomerNewAppinement() {
   const [counsellors, setCounsellors] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedCounsellor, setSelectedCounsellor] = useState(null);
+  const [selectedSession, setSelectedSession] = useState(null);
   const [loadingCounsellors, setLoadingCounsellors] = useState(true);
   const [loadingTimes, setLoadingTimes] = useState(false);
   const [error, setError] = useState('');
@@ -91,6 +92,21 @@ export default function CustomerNewAppinement() {
       [name]: value,
       ...(name === 'counsellor' ? { sessionTime: '' } : {}) // Reset session time if counsellor changes
     }));
+
+      // If session time is selected, find the session details
+    if (name === 'sessionTime') {
+      const session = availableTimes.find((slot) => slot.id.toString() === value);
+      setSelectedSession(session || null);
+    }
+
+    // Reset session time & session details if counsellor changes
+    if (name === 'counsellor') {
+      setFormData((prev) => ({
+        ...prev,
+        sessionTime: ''
+      }));
+      setSelectedSession(null);
+    }
   };
 
 const handleSubmit = async (e) => {
@@ -256,8 +272,25 @@ if (auth.isAuthenticated) {
         <h2 className="appointment-title">Counsellor Profile</h2>
         {selectedCounsellor ? (
           <div>
-            <p><strong>Name:</strong> {selectedCounsellor.firstName} {selectedCounsellor.lastName} </p>
+            <p><strong>Name:</strong> {selectedCounsellor.firstName} {selectedCounsellor.lastName}</p>
             <p><strong>Specializations:</strong> {selectedCounsellor.specializations}</p>
+
+            {/* Show session details */}
+            <br/>
+            {selectedSession ? (
+              <div className="session-details">
+                <h1>Session Details</h1>
+
+                <p><strong>Title:</strong> {selectedSession.sessionName}</p>
+                <p><strong>Date:</strong> {selectedSession.date}</p>
+                <p><strong>Start Time:</strong> {selectedSession.startTime}</p>
+                <p><strong>End Time:</strong> {selectedSession.endTime}</p>
+                <br/>
+                <p><strong>Description:</strong><br/> {selectedSession.sessionDesc}</p>
+              </div>
+            ) : (
+              <p>Please select a session time to view details.</p>
+            )}
           </div>
         ) : (
           <p>Please select a counsellor to view profile.</p>

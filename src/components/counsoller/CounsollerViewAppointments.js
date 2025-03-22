@@ -31,7 +31,7 @@ export default function CounsollerViewAppointments() {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const customerId = 3;
+      const customerId = 1;
       setLoadingAppointments(true);
       try {
         const response = await axios.get(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL}/appointment/counsellor?counsellorId=${customerId}`);
