@@ -5,6 +5,7 @@ const apiConfig = {
     APPOINTMET_SERVICE_API_BASE_URL: 'http://localhost:8081/better-wellness/booking',
 //  MESSAGING_SERVICE_API_BASE_URL: 'http://better-wellness-booking-service.better-wellness.svc.cluster.local:80/better-wellness/messaging,
     MESSAGING_SERVICE_API_BASE_URL: 'http://localhost:8081/better-wellness/messaging',
+    MESSAGING_SERVICE_WEB_SOCKET_URL: 'http://localhost:8082/ws',
 };
 
 export default apiConfig;

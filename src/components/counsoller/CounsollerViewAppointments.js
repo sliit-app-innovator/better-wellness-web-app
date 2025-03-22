@@ -6,8 +6,10 @@ import apiConfig from '../../config/apiConfig';
 import { FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { FaComments } from 'react-icons/fa';
-import { FaTelegramPlane } from 'react-icons/fa';
-  
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
+let stompClient = null;
+
 export default function CounsollerViewAppointments() {
   const auth = useAuth();
 
@@ -88,48 +90,126 @@ export default function CounsollerViewAppointments() {
   };
 
 
-    const openChatWindow = (counsellorName) => {
-      Swal.fire({
-        title: `Chat with ${counsellorName}`,
-        html: `
-          <div style="text-align:left; display: flex; flex-direction: column;">
-            <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-              <p><strong></p>
-            </div>
-            <div style="display: flex; align-items: center;">
-              <input id="chat-input" type="text" placeholder="Type your message..." style="flex:1; padding:10px; border-radius: 20px; border:1px solid #ccc;" />
-              <button id="send-btn" style="background:#0088cc; border:none; border-radius:50%; width:40px; height:40px; margin-left:10px; display:flex; align-items:center; justify-content:center;">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="20" height="20" viewBox="0 0 24 24">
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-              </button>
-            </div>
+  const openChatWindow = async (counsellorId, counsellorName, customerId, alias) => {
+    const chatHistory = await fetchMessages(customerId, counsellorId); // Initial load
+  
+    Swal.fire({
+      title: `Chat with ${alias}`,
+      html: `
+        <div style="text-align:left; display: flex; flex-direction: column;">
+          <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            ${chatHistory.map(msg => `
+              <p><strong>${msg.sender === 'counsellor' ? 'You' : alias}:</strong> ${msg.message}</p>
+            `).join('')}
           </div>
-        `,
-        showConfirmButton: false,
-        width: '400px',
-        didOpen: () => {
-          const chatBox = Swal.getPopup().querySelector('#chat-box');
-          const input = Swal.getPopup().querySelector('#chat-input');
-          const sendBtn = Swal.getPopup().querySelector('#send-btn');
-          
-          sendBtn.addEventListener('click', () => {
-            if (input.value.trim() !== '') {
-              const message = `<p><strong>You:</strong> ${input.value}</p>`;
-              chatBox.innerHTML += message;
-              input.value = '';
-              chatBox.scrollTop = chatBox.scrollHeight;
-            }
-          });
-    
-          // Optional: Press Enter to Send
-          input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendBtn.click();
-          });
+          <div style="display: flex; align-items: center;">
+            <input id="chat-input" type="text" placeholder="Type your message..." style="flex:1; padding:10px; border-radius: 20px; border:1px solid #ccc;" />
+            <button id="send-btn" style="background:#0088cc; border:none; border-radius:50%; width:40px; height:40px; margin-left:10px; display:flex; align-items:center; justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `,
+      showConfirmButton: false,
+      width: '400px',
+  
+      didOpen: () => {
+        const chatBox = Swal.getPopup().querySelector('#chat-box');
+        const input = Swal.getPopup().querySelector('#chat-input');
+        const sendBtn = Swal.getPopup().querySelector('#send-btn');
+  
+        const appendMessage = (sender, message) => {
+          const newMsg = `<p><strong>${sender === 'counsoller' ? 'You' : alias}:</strong> ${message}</p>`;
+          chatBox.innerHTML += newMsg;
+          chatBox.scrollTop = chatBox.scrollHeight;
+        };
+  
+        // 📡 Connect WebSocket using STOMP
+        const socket = new SockJS('http://localhost:8082/ws');
+        stompClient = new Client({
+          webSocketFactory: () => socket,
+          onConnect: () => {
+            console.log("WebSocket Connected");
+  
+            // Subscribe to message channel
+            stompClient.subscribe(`/topic/chat/${customerId}-${counsellorId}`, (message) => {
+              const data = JSON.parse(message.body);
+              window.alert(data.sender);
+              if (data.sender === 'customer') {
+                appendMessage(counsellorName, data.message);
+              }
+            });
+  
+            // Optionally notify server about JOIN
+            stompClient.publish({
+              destination: '/app/chat.join',
+              body: JSON.stringify({
+                sender: 'counsellor',
+                counsellorId: counsellorId,
+                customerId: customerId
+              })
+            });
+          },
+          onDisconnect: () => {
+            console.log('WebSocket Disconnected');
+          },
+          debug: (str) => {
+            console.log(str);
+          }
+        });
+  
+        stompClient.activate();
+  
+        // Send message on button click
+        sendBtn.addEventListener('click', () => {
+          if (input.value.trim() !== '') {
+            const messageContent = input.value;
+            appendMessage('counsoller', messageContent);
+  
+            stompClient.publish({
+              destination: '/app/chat.sendMessage',
+              body: JSON.stringify({
+                sender: 'counsoller',
+                counsellorId: counsellorId,
+                customerId: customerId,
+                message: messageContent
+              })
+            });
+  
+            input.value = '';
+          }
+        });
+  
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') sendBtn.click();
+        });
+      },
+  
+      willClose: () => {
+        if (stompClient) {
+          stompClient.deactivate();
+          stompClient = null;
+          console.log('WebSocket Connection Closed');
         }
-      });
-    };
+      }
+    });
+  };
 
+  const fetchMessages = async (customerId, counsellorId) => {
+    try {
+      const response = await axios.get(`http://localhost:8082/api/chat/history`, {
+        params: { customerId, counsellorId }
+      });
+      return response.data; // Assuming array of { sender, message }
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      return [];
+    }
+  };
+  
+  
   if (auth.isLoading || loadingAppointments) {
     return <div>Loading...</div>;
   }
@@ -164,7 +244,7 @@ return (
               <td>
                 <tr>
                   <td style={{ cursor: 'pointer', textAlign: 'center' }}
-                      onClick={() => openChatWindow(appointment.alias)} >
+                      onClick={() => openChatWindow(appointment.counsellorId, appointment.counsellorName, appointment.customerId, appointment.alias)} >
                       <FaComments style={{ color: '#3085d6', fontSize: '18px' }} />
                   </td>
                   <td onClick={() => handleDeleteAppointment(index, appointment.id)}

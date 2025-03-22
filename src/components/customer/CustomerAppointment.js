@@ -6,8 +6,11 @@ import apiConfig from '../../config/apiConfig';
 import { FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { FaComments } from 'react-icons/fa';
-import { FaTelegramPlane } from 'react-icons/fa';
-  
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
+
+let stompClient = null;
+
 export default function CustomerAppointment() {
   const auth = useAuth();
 
@@ -90,8 +93,6 @@ export default function CustomerAppointment() {
   const openChatWindow = async (counsellorId, counsellorName, customerId) => {
     const chatHistory = await fetchMessages(customerId, counsellorId); // Initial load
   
-    let pollInterval; // Declare outside for access
-  
     Swal.fire({
       title: `Chat with ${counsellorName}`,
       html: `
@@ -125,11 +126,57 @@ export default function CustomerAppointment() {
           chatBox.scrollTop = chatBox.scrollHeight;
         };
   
-        sendBtn.addEventListener('click', async () => {
+        // 📡 Connect WebSocket using STOMP
+        const socket = new SockJS('http://localhost:8082/ws');
+        stompClient = new Client({
+          webSocketFactory: () => socket,
+          onConnect: () => {
+            console.log("WebSocket Connected counsellorId " + counsellorId + "customerId " + customerId) ;
+  
+            // Subscribe to message channel
+            stompClient.subscribe(`/topic/chat/${customerId}-${counsellorId}`, (message) => {
+              const data = JSON.parse(message.body);
+              if (data.sender !== 'customer') {
+                appendMessage(counsellorName, data.message);
+              }
+            });
+  
+            // Optionally notify server about JOIN
+            stompClient.publish({
+              destination: '/app/chat.join',
+              body: JSON.stringify({
+                sender: 'customer',
+                counsellorId: counsellorId,
+                customerId: customerId
+              })
+            });
+          },
+          onDisconnect: () => {
+            console.log('WebSocket Disconnected');
+          },
+          debug: (str) => {
+            console.log(str);
+          }
+        });
+  
+        stompClient.activate();
+  
+        // Send message on button click
+        sendBtn.addEventListener('click', () => {
           if (input.value.trim() !== '') {
-            const message = input.value;
-            appendMessage('customer', message);
-            await sendMessage('customer', counsellorId, message); // API send
+            const messageContent = input.value;
+            appendMessage('customer', messageContent);
+  
+            stompClient.publish({
+              destination: '/app/chat.sendMessage',
+              body: JSON.stringify({
+                sender: 'customer',
+                counsellorId: counsellorId,
+                customerId: customerId,
+                message: messageContent
+              })
+            });
+  
             input.value = '';
           }
         });
@@ -137,49 +184,52 @@ export default function CustomerAppointment() {
         input.addEventListener('keypress', (e) => {
           if (e.key === 'Enter') sendBtn.click();
         });
-  
-        // Start Polling
-        pollInterval = setInterval(async () => {
-          const latestMessages = await fetchMessages(customerId, counsellorId);
-          chatBox.innerHTML = latestMessages.map(msg => `
-            <p><strong>${msg.sender === 'customer' ? 'You' : counsellorName}:</strong> ${msg.message}</p>
-          `).join('');
-          chatBox.scrollTop = chatBox.scrollHeight;
-        }, 5000);
       },
   
-      // 🟢 Stop Polling when closed
       willClose: () => {
-        clearInterval(pollInterval);
-        window.alert("Closed");
+        if (stompClient) {
+          stompClient.deactivate();
+          stompClient = null;
+          console.log('WebSocket Connection Closed');
+        }
       }
     });
   };
 
-  const sendMessage = async (sender, receiver, message) => {
-    try {
-      await axios.post(`${apiConfig.MESSAGING_SERVICE_API_BASE_URL}/messages/send`, {
-        sender,
-        receiver,
-        message
-      });
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    }
-  };
-  
-  // Fetch chat history API
   const fetchMessages = async (customerId, counsellorId) => {
     try {
-      const response = await axios.get(`https://webhook.site/e1ca0068-62d5-464d-b4b3-47b089488caf/messages/send`, {
+      const response = await axios.get(`http://localhost:8082/api/chat/history`, {
         params: { customerId, counsellorId }
       });
-      return response.data; // assuming array of { sender, message }
+      return response.data; // Assuming array of { sender, message }
     } catch (error) {
       console.error('Failed to fetch messages:', error);
       return [];
     }
   };
+  
+  const connectWebSocket = (counsellorId, customerId, onMessageReceived) => {
+    const socket = new SockJS(`${apiConfig.MESSAGING_SERVICE_WEB_SOCKET_URL}`);
+    stompClient = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        console.log("Connected");
+        stompClient.subscribe('/topic/public', (message) => {
+          const msg = JSON.parse(message.body);
+          onMessageReceived(msg); // Call function to append msg to UI
+        });
+      }
+    });
+    stompClient.activate();
+  };
+  
+  const sendMessage = (sender, receiver, content) => {
+    stompClient.publish({
+      destination: '/app/chat.sendMessage',
+      body: JSON.stringify({ sender, receiver, content })
+    });
+  };
+
 
 
   if (auth.isLoading || loadingAppointments) {
