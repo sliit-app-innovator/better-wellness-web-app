@@ -87,13 +87,19 @@ export default function CustomerAppointment() {
     }
   };
 
-  const openChatWindow = (counsellorName) => {
+  const openChatWindow = async (counsellorId, counsellorName, customerId) => {
+    const chatHistory = await fetchMessages(customerId, counsellorId); // Initial load
+  
+    let pollInterval; // Declare outside for access
+  
     Swal.fire({
       title: `Chat with ${counsellorName}`,
       html: `
         <div style="text-align:left; display: flex; flex-direction: column;">
           <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-            <p><strong>${counsellorName}:</strong> Hello, how can I help you?</p>
+            ${chatHistory.map(msg => `
+              <p><strong>${msg.sender === 'customer' ? 'You' : counsellorName}:</strong> ${msg.message}</p>
+            `).join('')}
           </div>
           <div style="display: flex; align-items: center;">
             <input id="chat-input" type="text" placeholder="Type your message..." style="flex:1; padding:10px; border-radius: 20px; border:1px solid #ccc;" />
@@ -107,27 +113,74 @@ export default function CustomerAppointment() {
       `,
       showConfirmButton: false,
       width: '400px',
+  
       didOpen: () => {
         const chatBox = Swal.getPopup().querySelector('#chat-box');
         const input = Swal.getPopup().querySelector('#chat-input');
         const sendBtn = Swal.getPopup().querySelector('#send-btn');
-        
-        sendBtn.addEventListener('click', () => {
+  
+        const appendMessage = (sender, message) => {
+          const newMsg = `<p><strong>${sender === 'customer' ? 'You' : counsellorName}:</strong> ${message}</p>`;
+          chatBox.innerHTML += newMsg;
+          chatBox.scrollTop = chatBox.scrollHeight;
+        };
+  
+        sendBtn.addEventListener('click', async () => {
           if (input.value.trim() !== '') {
-            const message = `<p><strong>You:</strong> ${input.value}</p>`;
-            chatBox.innerHTML += message;
+            const message = input.value;
+            appendMessage('customer', message);
+            await sendMessage('customer', counsellorId, message); // API send
             input.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
           }
         });
   
-        // Optional: Press Enter to Send
         input.addEventListener('keypress', (e) => {
           if (e.key === 'Enter') sendBtn.click();
         });
+  
+        // Start Polling
+        pollInterval = setInterval(async () => {
+          const latestMessages = await fetchMessages(customerId, counsellorId);
+          chatBox.innerHTML = latestMessages.map(msg => `
+            <p><strong>${msg.sender === 'customer' ? 'You' : counsellorName}:</strong> ${msg.message}</p>
+          `).join('');
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }, 5000);
+      },
+  
+      // 🟢 Stop Polling when closed
+      willClose: () => {
+        clearInterval(pollInterval);
+        window.alert("Closed");
       }
     });
   };
+
+  const sendMessage = async (sender, receiver, message) => {
+    try {
+      await axios.post(`${apiConfig.MESSAGING_SERVICE_API_BASE_URL}/messages/send`, {
+        sender,
+        receiver,
+        message
+      });
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
+  };
+  
+  // Fetch chat history API
+  const fetchMessages = async (customerId, counsellorId) => {
+    try {
+      const response = await axios.get(`https://webhook.site/e1ca0068-62d5-464d-b4b3-47b089488caf/messages/send`, {
+        params: { customerId, counsellorId }
+      });
+      return response.data; // assuming array of { sender, message }
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      return [];
+    }
+  };
+
 
   if (auth.isLoading || loadingAppointments) {
     return <div>Loading...</div>;
@@ -177,7 +230,7 @@ return (
               <td>
                 <tr>
                   <td style={{ cursor: 'pointer', textAlign: 'center' }}
-                      onClick={() => openChatWindow(appointment.counsellorName)} >
+                      onClick={() => openChatWindow(appointment.counsellorId, appointment.counsellorName, appointment.customerId)} >
                       <FaComments style={{ color: '#3085d6', fontSize: '18px' }} />
                   </td>
                   <td onClick={() => handleDeleteAppointment(index, appointment.id)}
