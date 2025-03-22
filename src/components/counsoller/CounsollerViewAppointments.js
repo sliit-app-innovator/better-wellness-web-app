@@ -121,13 +121,14 @@ export default function CounsollerViewAppointments() {
         const sendBtn = Swal.getPopup().querySelector('#send-btn');
   
         const appendMessage = (sender, message) => {
-          const newMsg = `<p><strong>${sender === 'counsoller' ? 'You' : alias}:</strong> ${message}</p>`;
+          window.alert("new M" + sendBtn)
+          const newMsg = `<p><strong>${sender !== 'customer' ? 'You' : alias}:</strong> ${message}</p>`;
           chatBox.innerHTML += newMsg;
           chatBox.scrollTop = chatBox.scrollHeight;
         };
   
         // 📡 Connect WebSocket using STOMP
-        const socket = new SockJS('http://localhost:8082/ws');
+        const socket = new SockJS(`${apiConfig.MESSAGING_SERVICE_WEB_SOCKET_URL}`);
         stompClient = new Client({
           webSocketFactory: () => socket,
           onConnect: () => {
@@ -166,12 +167,12 @@ export default function CounsollerViewAppointments() {
         sendBtn.addEventListener('click', () => {
           if (input.value.trim() !== '') {
             const messageContent = input.value;
-            appendMessage('counsoller', messageContent);
+            appendMessage('counsellor', messageContent);
   
             stompClient.publish({
               destination: '/app/chat.sendMessage',
               body: JSON.stringify({
-                sender: 'counsoller',
+                sender: 'counsellor',
                 counsellorId: counsellorId,
                 customerId: customerId,
                 message: messageContent
@@ -199,7 +200,7 @@ export default function CounsollerViewAppointments() {
 
   const fetchMessages = async (customerId, counsellorId) => {
     try {
-      const response = await axios.get(`http://localhost:8082/api/chat/history`, {
+      const response = await axios.get(`${apiConfig.MESSAGING_SERVICE_CHAT_HISTORY_URL}`, {
         params: { customerId, counsellorId }
       });
       return response.data; // Assuming array of { sender, message }

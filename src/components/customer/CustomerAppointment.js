@@ -127,7 +127,7 @@ export default function CustomerAppointment() {
         };
   
         // 📡 Connect WebSocket using STOMP
-        const socket = new SockJS('http://localhost:8082/ws');
+        const socket = new SockJS(`${apiConfig.MESSAGING_SERVICE_WEB_SOCKET_URL}`);
         stompClient = new Client({
           webSocketFactory: () => socket,
           onConnect: () => {
@@ -198,7 +198,7 @@ export default function CustomerAppointment() {
 
   const fetchMessages = async (customerId, counsellorId) => {
     try {
-      const response = await axios.get(`http://localhost:8082/api/chat/history`, {
+      const response = await axios.get(`${apiConfig.MESSAGING_SERVICE_CHAT_HISTORY_URL}`, {
         params: { customerId, counsellorId }
       });
       return response.data; // Assuming array of { sender, message }
