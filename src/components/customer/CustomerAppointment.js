@@ -5,6 +5,8 @@ import axios from 'axios';
 import apiConfig from '../../config/apiConfig';
 import { FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import { FaComments } from 'react-icons/fa';
+import { FaTelegramPlane } from 'react-icons/fa';
   
 export default function CustomerAppointment() {
   const auth = useAuth();
@@ -61,7 +63,7 @@ export default function CustomerAppointment() {
 
   const handleDeleteAppointment = async (index, appointmentId) => {
     const result = await Swal.fire({
-      title: 'Delete Appointment?',
+      title: 'Cancel Appointment?',
       text: "Are you sure you want to delete this appointment?",
       icon: 'warning',
       showCancelButton: true,
@@ -85,15 +87,56 @@ export default function CustomerAppointment() {
     }
   };
 
+  const openChatWindow = (counsellorName) => {
+    Swal.fire({
+      title: `Chat with ${counsellorName}`,
+      html: `
+        <div style="text-align:left; display: flex; flex-direction: column;">
+          <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <p><strong>${counsellorName}:</strong> Hello, how can I help you?</p>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <input id="chat-input" type="text" placeholder="Type your message..." style="flex:1; padding:10px; border-radius: 20px; border:1px solid #ccc;" />
+            <button id="send-btn" style="background:#0088cc; border:none; border-radius:50%; width:40px; height:40px; margin-left:10px; display:flex; align-items:center; justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `,
+      showConfirmButton: false,
+      width: '400px',
+      didOpen: () => {
+        const chatBox = Swal.getPopup().querySelector('#chat-box');
+        const input = Swal.getPopup().querySelector('#chat-input');
+        const sendBtn = Swal.getPopup().querySelector('#send-btn');
+        
+        sendBtn.addEventListener('click', () => {
+          if (input.value.trim() !== '') {
+            const message = `<p><strong>You:</strong> ${input.value}</p>`;
+            chatBox.innerHTML += message;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+        });
+  
+        // Optional: Press Enter to Send
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') sendBtn.click();
+        });
+      }
+    });
+  };
 
   if (auth.isLoading || loadingAppointments) {
     return <div>Loading...</div>;
   }
 
 
-    return (
-<div className="parent-container-profile">
-  <div className="profile-container">
+return (
+<div className="appointment-container-profile">
+  <div className="appointment-container">
     <h2 className="profile-title">Your Recent Appointments</h2>
     {loadingAppointments ? (
       <p>Loading appointments...</p>
@@ -105,6 +148,8 @@ export default function CustomerAppointment() {
           <th>Time</th>
           <th>Alias</th>
           <th>Counselor Name</th>
+          <th>Counselor Specializations</th>
+          <th>Requested Date</th>
           <th>Action</th> {/* New Column */}
         </tr>
       </thead>
@@ -117,10 +162,29 @@ export default function CustomerAppointment() {
               <td>{appointment.alias}</td>
               <td>{appointment.counsellorName}</td>
               <td 
-                onClick={() => handleDeleteAppointment(index, appointment.id)}
-                className="delete-icon-cell"
+                className="specialization-link"
+                style={{ color: '#3085d6', cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => Swal.fire({
+                  title: 'Counsellor Specializations',
+                  html: `<p style="text-align:left;">${appointment.counsellorSpec}</p>`,
+                  icon: 'info',
+                  confirmButtonColor: '#3085d6'
+                })}
               >
-                <FaTrashAlt className="delete-icon" />
+                View Specializations
+              </td>
+              <td>{appointment.createdDate}</td>
+              <td>
+                <tr>
+                  <td style={{ cursor: 'pointer', textAlign: 'center' }}
+                      onClick={() => openChatWindow(appointment.counsellorName)} >
+                      <FaComments style={{ color: '#3085d6', fontSize: '18px' }} />
+                  </td>
+                  <td onClick={() => handleDeleteAppointment(index, appointment.id)}
+                  className="delete-icon-cell">
+                  <FaTrashAlt className="delete-icon" />
+                  </td>
+                </tr>
               </td>
             </tr>
           ))
