@@ -29,6 +29,13 @@ export default function CustomerAppointment() {
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const processedTimestamps = new Set();
+  
+  setInterval(() => {
+    if (processedTimestamps.size > 100) {
+      processedTimestamps.clear();
+    }
+  }, 30000)
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -119,9 +126,13 @@ export default function CustomerAppointment() {
         const chatBox = Swal.getPopup().querySelector('#chat-box');
         const input = Swal.getPopup().querySelector('#chat-input');
         const sendBtn = Swal.getPopup().querySelector('#send-btn');
-  
+        chatBox.scrollTo({
+          top: chatBox.scrollHeight,
+          behavior: 'smooth'
+        });
+
         const appendMessage = (sender, message) => {
-          const newMsg = `<p><strong>${sender === 'customer' ? 'You' : counsellorName}:</strong> ${message}</p>`;
+          const newMsg = `<p><strong>${sender === 'customer' ? 'You' : sender}:</strong> ${message}</p>`;
           chatBox.innerHTML += newMsg;
           chatBox.scrollTop = chatBox.scrollHeight;
         };
@@ -132,12 +143,19 @@ export default function CustomerAppointment() {
           webSocketFactory: () => socket,
           onConnect: () => {
             console.log("WebSocket Connected counsellorId " + counsellorId + "customerId " + customerId) ;
-  
-            // Subscribe to message channel
+
             stompClient.subscribe(`/topic/chat/${customerId}-${counsellorId}`, (message) => {
               const data = JSON.parse(message.body);
-              if (data.sender !== 'customer') {
-                appendMessage(counsellorName, data.message);
+              console.log("Incomming message.........")
+              // Check if message with same timestamp already processed
+              if (!processedTimestamps.has(data.timestamp)) {
+                processedTimestamps.add(data.timestamp);
+                console.log("Incomming message.........Time check passs ")
+                // Only process if not duplicate
+                if (data.sender === 'counsellor') {
+                  console.log("Incomming message.........sender check passs ")
+                  appendMessage(counsellorName, data.message);
+                }
               }
             });
   
@@ -173,6 +191,7 @@ export default function CustomerAppointment() {
                 sender: 'customer',
                 counsellorId: counsellorId,
                 customerId: customerId,
+                timestamp: Date.now(),
                 message: messageContent
               })
             });

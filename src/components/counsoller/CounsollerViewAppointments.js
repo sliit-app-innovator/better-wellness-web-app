@@ -28,6 +28,13 @@ export default function CounsollerViewAppointments() {
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const processedTimestamps = new Set();
+
+  setInterval(() => {
+    if (processedTimestamps.size > 100) {
+      processedTimestamps.clear();
+    }
+  }, 30000)
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -92,7 +99,6 @@ export default function CounsollerViewAppointments() {
 
   const openChatWindow = async (counsellorId, counsellorName, customerId, alias) => {
     const chatHistory = await fetchMessages(customerId, counsellorId); // Initial load
-  
     Swal.fire({
       title: `Chat with ${alias}`,
       html: `
@@ -119,10 +125,13 @@ export default function CounsollerViewAppointments() {
         const chatBox = Swal.getPopup().querySelector('#chat-box');
         const input = Swal.getPopup().querySelector('#chat-input');
         const sendBtn = Swal.getPopup().querySelector('#send-btn');
-  
+        chatBox.scrollTo({
+          top: chatBox.scrollHeight,
+          behavior: 'smooth'
+        });
+
         const appendMessage = (sender, message) => {
-          window.alert("new M" + sendBtn)
-          const newMsg = `<p><strong>${sender !== 'customer' ? 'You' : alias}:</strong> ${message}</p>`;
+          const newMsg = `<p><strong>${sender === 'counsellor' ? 'You' : alias}:</strong> ${message}</p>`;
           chatBox.innerHTML += newMsg;
           chatBox.scrollTop = chatBox.scrollHeight;
         };
@@ -134,12 +143,18 @@ export default function CounsollerViewAppointments() {
           onConnect: () => {
             console.log("WebSocket Connected");
   
-            // Subscribe to message channel
+
             stompClient.subscribe(`/topic/chat/${customerId}-${counsellorId}`, (message) => {
               const data = JSON.parse(message.body);
-              window.alert(data.sender);
-              if (data.sender === 'customer') {
-                appendMessage(counsellorName, data.message);
+
+              // Check if message with same timestamp already processed
+              if (!processedTimestamps.has(data.timestamp)) {
+                processedTimestamps.add(data.timestamp);
+
+                // Only process if not duplicate
+                if (data.sender === 'customer') {
+                  appendMessage(counsellorName, data.message);
+                }
               }
             });
   
@@ -175,6 +190,7 @@ export default function CounsollerViewAppointments() {
                 sender: 'counsellor',
                 counsellorId: counsellorId,
                 customerId: customerId,
+                timestamp: Date.now(),
                 message: messageContent
               })
             });
