@@ -1,6 +1,8 @@
     # Step 1: Build Stage
     FROM node:18-alpine AS build
 
+    RUN apk update && apk add --no-cache curl
+    
     # Set working directory
     WORKDIR /app
 

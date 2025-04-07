@@ -14,17 +14,6 @@ let stompClient = null;
 export default function CustomerAppointment() {
   const auth = useAuth();
 
-  
-  const [customerProfile, setCustomerProfile] = useState({
-    first_name: '',
-    last_name: '',
-    username: '',
-    age: '',
-    created_at: '',
-    last_login_at: '',
-    updated_at: ''
-  });
-
   const [appointments, setAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');
@@ -227,29 +216,6 @@ export default function CustomerAppointment() {
     }
   };
   
-  const connectWebSocket = (counsellorId, customerId, onMessageReceived) => {
-    const socket = new SockJS(`${apiConfig.MESSAGING_SERVICE_WEB_SOCKET_URL}`);
-    stompClient = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        console.log("Connected");
-        stompClient.subscribe('/topic/public', (message) => {
-          const msg = JSON.parse(message.body);
-          onMessageReceived(msg); // Call function to append msg to UI
-        });
-      }
-    });
-    stompClient.activate();
-  };
-  
-  const sendMessage = (sender, receiver, content) => {
-    stompClient.publish({
-      destination: '/app/chat.sendMessage',
-      body: JSON.stringify({ sender, receiver, content })
-    });
-  };
-
-
 
   if (auth.isLoading || loadingAppointments) {
     return <div>Loading...</div>;

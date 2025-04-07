@@ -7,6 +7,10 @@ import image2 from '../../images/carol2.webp';
 import image3 from '../../images/carol3.webp';
 import image4 from '../../images/carol4.webp';
 import image5 from '../../images/carol5.webp';
+import {
+  CognitoUserPool,
+  CognitoUser
+} from 'amazon-cognito-identity-js';
 
 export default function Home() {
   const auth = useAuth();
@@ -17,6 +21,48 @@ export default function Home() {
     const cognitoDomain = "https://<user pool domain>";
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
+
+  const poolData = {
+    UserPoolId: 'ap-southeast-1_MDALqeEul', // e.g., 'us-east-1_ExaMPle'
+    ClientId: '2e7r3hbu27idrarueslb4tf4el', // e.g., '1example23456789'
+  };
+  const userPool = new CognitoUserPool(poolData);
+
+  const cognitoUser = userPool.getCurrentUser();
+
+  if (cognitoUser != null) {
+    // User is logged in
+  } else {
+    // No user is logged in
+  }
+
+  if (cognitoUser != null) {
+    cognitoUser.getSession(function(err, session) {
+      if (err) {
+        console.error('Error retrieving session:', err);
+        return;
+      }
+      if (session.isValid()) {
+        // Session is valid; you can now access user attributes
+        cognitoUser.getUserAttributes(function(err, attributes) {
+          if (err) {
+            console.error('Error retrieving user attributes:', err);
+            return;
+          }
+          // Process user attributes
+          attributes.forEach(attribute => {
+            console.log(`${attribute.getName()} = ${attribute.getValue()}`);
+          });
+        });
+      } else {
+        console.log('Session is invalid.');
+      }
+    });
+  } else {
+    console.log('No user is currently logged in.');
+  }
+
+
 
   if (auth.isLoading) {
     return <div>Loading...</div>;

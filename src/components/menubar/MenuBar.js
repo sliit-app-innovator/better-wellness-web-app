@@ -5,6 +5,13 @@ import { useAuth } from "react-oidc-context";
 
 const MenuBar = () => {
 
+  const signOutRedirect = () => {
+    const clientId = "7ostkmm64r70hmnjhmcnphhtc8";
+    const logoutUri = "<logout uri>";
+    const cognitoDomain = "https://<user pool domain>";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+  };
+
   const auth = useAuth();
   if (auth.isLoading) {
     return <div>Loading...</div>;
@@ -14,6 +21,10 @@ const MenuBar = () => {
     return (
       <div>
         <nav className="navbar">
+            <pre> Hello: {auth.user?.profile.email} </pre>
+            <pre> ID Token: {auth.user?.id_token} </pre>
+            <pre> Access Token: {auth.user?.access_token} </pre>
+            <pre> Refresh Token: {auth.user?.refresh_token} </pre>
             <div className="nav-links">
               <Link to="/"></Link>
               <Link to="/about"></Link>
@@ -22,7 +33,7 @@ const MenuBar = () => {
               <Link to="/contact"></Link>
             </div>
             <div className="auth-links">
-              <button onClick={() => auth.removeUser()}>Sign out</button>
+              <button onClick={() => signOutRedirect()}>Sign out</button>
             </div>
         </nav>
       </div>
@@ -40,7 +51,7 @@ const MenuBar = () => {
             <Link to="/contact">Contact</Link>
           </div>
           <div className="auth-links">
-            <button onClick={() => auth.removeUser()}>Sign out</button>
+            <button onClick={() => auth.signinRedirect()}>Sign In</button>
           </div>
         </div>
       </nav>

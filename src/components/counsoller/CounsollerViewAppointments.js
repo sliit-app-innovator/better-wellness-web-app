@@ -13,17 +13,6 @@ let stompClient = null;
 export default function CounsollerViewAppointments() {
   const auth = useAuth();
 
-  
-  const [customerProfile, setCustomerProfile] = useState({
-    first_name: '',
-    last_name: '',
-    username: '',
-    age: '',
-    created_at: '',
-    last_login_at: '',
-    updated_at: ''
-  });
-
   const [appointments, setAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');
