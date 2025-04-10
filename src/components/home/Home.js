@@ -1,6 +1,9 @@
 import React from 'react';
 import { useAuth } from "react-oidc-context";
 import Carousel from 'react-bootstrap/Carousel';
+import { awsUserPoolData } from '../../aws-exports.js';
+import axios from "axios";
+import apiConfig from '../../config/apiConfig';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import image1 from '../../images/carol1.webp';  // Adjust path relative to src/components/home/Home.js
 import image2 from '../../images/carol2.webp';
@@ -16,25 +19,15 @@ export default function Home() {
   const auth = useAuth();
 
   const signOutRedirect = () => {
-    const clientId = "6iacmbs34ua4srv863jguc43vg";
-    const logoutUri = "<logout uri>";
-    const cognitoDomain = "https://<user pool domain>";
+    const clientId = "7u1icmkn6vv97apgrr1du5sbs9";
+    const logoutUri = "http://www.google.com";
+    const cognitoDomain = "https://ap-south-1of6yas36s.auth.ap-south-1.amazoncognito.com";
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
 
-  const poolData = {
-    UserPoolId: 'ap-southeast-1_MDALqeEul', // e.g., 'us-east-1_ExaMPle'
-    ClientId: '2e7r3hbu27idrarueslb4tf4el', // e.g., '1example23456789'
-  };
-  const userPool = new CognitoUserPool(poolData);
+  const userPool = new CognitoUserPool(awsUserPoolData);
 
   const cognitoUser = userPool.getCurrentUser();
-
-  if (cognitoUser != null) {
-    // User is logged in
-  } else {
-    // No user is logged in
-  }
 
   if (cognitoUser != null) {
     cognitoUser.getSession(function(err, session) {
@@ -42,27 +35,67 @@ export default function Home() {
         console.error('Error retrieving session:', err);
         return;
       }
+  
       if (session.isValid()) {
-        // Session is valid; you can now access user attributes
-        cognitoUser.getUserAttributes(function(err, attributes) {
+        cognitoUser.getUserAttributes(async function(err, attributes) {
           if (err) {
             console.error('Error retrieving user attributes:', err);
             return;
           }
-          // Process user attributes
-          attributes.forEach(attribute => {
-            console.log(`${attribute.getName()} = ${attribute.getValue()}`);
+  
+          // Convert attributes to key-value object
+          console.log("User Name ->>> " + cognitoUser.username);
+          const userData = {};
+          attributes.forEach(attr => {
+            userData[attr.getName()] = attr.getValue();
+            console.log(`${attr.getName()} = ${attr.getValue()}`);
           });
+  
+          console.log("User role:", userData["custom:role"]);
+  
+          try {
+            let apiUrl = "";
+            let payload = {};
+            if (userData["custom:role"] === "Customer") {
+              apiUrl = apiConfig.USER_SERVICE_API_BASE_URL + "/customer";
+              payload = {
+                username: cognitoUser.username,
+                email: userData.email,
+                age:userData["custom:age"],
+                firstName: userData.given_name,
+                lastName: userData.family_name,
+                role: "Customer"
+              };
+            } else if (userData["custom:role"] === "Counsellor") {
+              apiUrl = apiConfig.USER_SERVICE_API_BASE_URL + "/counsellor";
+              payload = {
+                username: cognitoUser.username,
+                email: userData.email,
+                firstName: userData.given_name,
+                lastName: userData.family_name,
+                role: "Counsellor",
+                specializations: userData["custom:specialization"] || null,
+                description: userData["custom:description"] || null
+              };
+            } else {
+              console.warn("Unknown role, no API called.");
+              return;
+            }
+  
+            const response = await axios.post(apiUrl, payload);
+            console.log("User synced to:", apiUrl, response.data);
+  
+          } catch (apiErr) {
+            console.error("Failed to sync user with backend:", apiErr);
+          }
         });
       } else {
-        console.log('Session is invalid.');
+        console.log("Session is invalid.");
       }
     });
   } else {
-    console.log('No user is currently logged in.');
+    console.log("No user is currently logged in.");
   }
-
-
 
   if (auth.isLoading) {
     return <div>Loading...</div>;
