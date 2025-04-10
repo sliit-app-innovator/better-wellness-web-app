@@ -7,13 +7,6 @@ import apiConfig from '../../config/apiConfig';
 export default function CustomerNewAppinement() {
   const auth = useAuth();
 
-  const signOutRedirect = () => {
-    const clientId = "6iacmbs34ua4srv863jguc43vg";
-    const logoutUri = "<logout uri>";
-    const cognitoDomain = "https://<user pool domain>";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
-
   const [formData, setFormData] = useState({
     counsellor: '',
     sessionTime: '',
@@ -126,7 +119,7 @@ const handleSubmit = async (e) => {
     };
 
     try {
-      const response = await axios.post(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL  }/appointment`, payload); // ADD await ✅
+      await axios.post(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL  }/appointment`, payload); 
       setSuccess('Appointment booked successfully!');
       // Reset form
       setFormData({
