@@ -5,7 +5,7 @@ import { Amplify } from 'aws-amplify';
 import { awsExports } from "./aws-exports";
 import { Authenticator } from "@aws-amplify/ui-react";
 import '@aws-amplify/ui-react/styles.css';
-
+import { UserProvider } from "./components/UserContext"; 
 // Pages & Components
 import Layout from "./components/Layout";
 import Home from "./components/home/Home";
@@ -56,6 +56,7 @@ function App() {
   }, []);
 
   return (
+    <UserProvider>
     <Authenticator.Provider>
       <Authenticator
         initialState="signIn"
@@ -190,6 +191,7 @@ function App() {
         )}
       </Authenticator>
     </Authenticator.Provider>
+    </UserProvider>
   );
 }
 

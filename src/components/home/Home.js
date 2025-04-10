@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from "react-oidc-context";
 import Carousel from 'react-bootstrap/Carousel';
 import { awsUserPoolData } from '../../aws-exports.js';
 import axios from "axios";
 import apiConfig from '../../config/apiConfig';
+import { useUser } from "../UserContext";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import image1 from '../../images/carol1.webp';  // Adjust path relative to src/components/home/Home.js
 import image2 from '../../images/carol2.webp';
@@ -26,9 +27,9 @@ export default function Home() {
   };
 
   const userPool = new CognitoUserPool(awsUserPoolData);
-
+  const { saveUser } = useUser();
+  useEffect(() => {
   const cognitoUser = userPool.getCurrentUser();
-
   if (cognitoUser != null) {
     cognitoUser.getSession(function(err, session) {
       if (err) {
@@ -44,7 +45,7 @@ export default function Home() {
           }
   
           // Convert attributes to key-value object
-          console.log("User Name ->>> " + cognitoUser.username);
+          console.log("User Name ->>> " + cognitoUser.username + " IS AUTH >>>>>>>> " + auth.isAuthenticated);
           const userData = {};
           attributes.forEach(attr => {
             userData[attr.getName()] = attr.getValue();
@@ -82,8 +83,12 @@ export default function Home() {
               return;
             }
   
-            const response = await axios.post(apiUrl, payload);
-            console.log("User synced to:", apiUrl, response.data);
+            try {
+              const response = await axios.post(apiUrl, payload);
+              saveUser({ ...userData, apiResponse: response.data });
+            } catch (error) {
+              console.error("Sync failed:", error);
+            }
   
           } catch (apiErr) {
             console.error("Failed to sync user with backend:", apiErr);
@@ -104,6 +109,8 @@ export default function Home() {
   if (auth.error) {
     return <div>Encountered an error... {auth.error.message}</div>;
   }
+  }, []);
+  const { user, isAuthenticated } = useUser();
 
   return (
     <div className="container mt-4">
@@ -198,9 +205,9 @@ export default function Home() {
         </Carousel.Item>
     </Carousel>
 
-      {auth.isAuthenticated ? (
+      {isAuthenticated ? (
         <div>
-          <p>Welcome, {auth.user?.profile.email}!</p>
+          <p>Welcome, {user.given_name}!</p>
           <button className="btn btn-primary me-2" onClick={() => auth.removeUser()}>
             Sign out
           </button>
