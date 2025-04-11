@@ -10,7 +10,7 @@ const MenuBar = () => {
   const signOutRedirect = () => {
     // Update these values with your actual Cognito app info
     const clientId = apiConfig.AWS_CLIENT_ID;
-    const logoutUri = apiConfig.LOGOUT_URL; // Or your post-logout redirect URI
+    const logoutUri = apiConfig.AWS_LOGOUT_URL; // Or your post-logout redirect URI
     const cognitoDomain = apiConfig.AWS_COGNITO_DOMAIN;
     // Clear local user state
     logoutUser();
