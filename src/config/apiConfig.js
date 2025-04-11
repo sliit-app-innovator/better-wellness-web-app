@@ -1,8 +1,8 @@
 const apiConfig = {
-    USER_SERVICE_API_BASE_URL: 'http://a73f1f10ad5564188b67b975282c3da6-816602576.ap-south-1.elb.amazonaws.com/better-wellness/user',
-    APPOINTMET_SERVICE_API_BASE_URL: 'http://ab226834ef0f346b49a4d80482c8bcc9-431177096.ap-south-1.elb.amazonaws.com/better-wellness/booking',
-    MESSAGING_SERVICE_CHAT_HISTORY_URL: 'http://a6a83a49a717946e29f285c16ffa764e-1658463255.ap-south-1.elb.amazonaws.com/api/chat/history',
-    MESSAGING_SERVICE_WEB_SOCKET_URL: 'http://a6a83a49a717946e29f285c16ffa764e-1658463255.ap-south-1.elb.amazonaws.com/ws',
+    USER_SERVICE_API_BASE_URL: 'https://a73f1f10ad5564188b67b975282c3da6-816602576.ap-south-1.elb.amazonaws.com/better-wellness/user',
+    APPOINTMET_SERVICE_API_BASE_URL: 'https://ab226834ef0f346b49a4d80482c8bcc9-431177096.ap-south-1.elb.amazonaws.com/better-wellness/booking',
+    MESSAGING_SERVICE_CHAT_HISTORY_URL: 'https://a6a83a49a717946e29f285c16ffa764e-1658463255.ap-south-1.elb.amazonaws.com/api/chat/history',
+    MESSAGING_SERVICE_WEB_SOCKET_URL: 'https://a6a83a49a717946e29f285c16ffa764e-1658463255.ap-south-1.elb.amazonaws.com/ws',
 
     AWS_REGION: 'ap-south-1',
     AWS_LOGOUT_URL: 'https://dev.d32xo3do3h3y4p.amplifyapp.com/',
