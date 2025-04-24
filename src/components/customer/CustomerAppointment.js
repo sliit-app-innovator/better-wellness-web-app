@@ -8,12 +8,13 @@ import Swal from 'sweetalert2';
 import { FaComments } from 'react-icons/fa';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import { useUser } from "../UserContext";
 
 let stompClient = null;
 
 export default function CustomerAppointment() {
   const auth = useAuth();
-
+  const { user, isAuthenticated } = useUser();
   const [appointments, setAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');

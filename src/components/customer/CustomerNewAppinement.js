@@ -267,6 +267,7 @@ if (auth.isAuthenticated) {
           <div>
             <p><strong>Name:</strong> {selectedCounsellor.firstName} {selectedCounsellor.lastName}</p>
             <p><strong>Specializations:</strong> {selectedCounsellor.specializations}</p>
+            <p><strong>Description:</strong> {selectedCounsellor.description}</p>
 
             {/* Show session details */}
             <br/>
