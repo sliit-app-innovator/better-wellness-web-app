@@ -6,8 +6,8 @@ const apiConfig = {
     
     AWS_REGION: 'ap-south-1',
     AWS_LOGOUT_URL: 'https://dev.d1z0ebfwofvf1t.amplifyapp.com/',
-    AWS_CLIENT_ID: '7u1icmkn6vv97apgrr1du5sbs9',
-    AWS_USER_POOL_ID: 'ap-south-1_of6yaS36s',
+    AWS_CLIENT_ID: '4jf4c11l04o6ot9sds8f2cd6be',
+    AWS_USER_POOL_ID: 'ap-south-1_zbLtEa3L7',
     AWS_COGNITO_DOMAIN: 'https://ap-south-1of6yas36s.auth.ap-south-1.amazoncognito.com',
 };
 
