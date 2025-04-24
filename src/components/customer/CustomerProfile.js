@@ -21,7 +21,12 @@ export default function CustomerProfile() {
 
   const [loadingProfile, setLoadingProfile] = useState(false); 
   const [error, setError] = useState('');
-  const { user, isAuthenticated } = useUser();
+  const { user } = useUser();
+
+  console.log("User database ID:", user.apiResponse.id);
+  console.log("User name:", user.given_name);
+
+
   useEffect(() => {
     const fetchProfile = async () => {
         setLoadingProfile(true);
@@ -29,7 +34,6 @@ export default function CustomerProfile() {
           // Replace API URL as needed
         //  const username = auth.user?.profile?.preferred_username || auth.user?.profile?.email;
          // const token = auth.user?.access_token;
-         console.error('LOGGED USER ID -------->>> ' +  user.id);
           const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/customer/1`);
           setCustomerProfile(response.data);
  //         window.alert(response.data.age);

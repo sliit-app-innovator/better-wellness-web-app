@@ -9,6 +9,7 @@ export const UserProvider = ({ children }) => {
 
   const saveUser = (userData) => {
     setUser(userData);
+    console.log("saveUser() ", userData);
     setIsAuthenticated(true);
   };
 
