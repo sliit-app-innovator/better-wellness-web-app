@@ -22,9 +22,7 @@ export default function CustomerProfile() {
   const [loadingProfile, setLoadingProfile] = useState(false); 
   const [error, setError] = useState('');
   const { user } = useUser();
-
   console.log("User database ID:", user.apiResponse.id);
-  console.log("User name:", user.given_name);
 
 
   useEffect(() => {
@@ -34,7 +32,7 @@ export default function CustomerProfile() {
           // Replace API URL as needed
         //  const username = auth.user?.profile?.preferred_username || auth.user?.profile?.email;
          // const token = auth.user?.access_token;
-          const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/customer/1`);
+          const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/customer/${user.apiResponse.id}`);
           setCustomerProfile(response.data);
  //         window.alert(response.data.age);
  //         window.alert(response.data.first_name);

@@ -14,13 +14,14 @@ let stompClient = null;
 
 export default function CustomerAppointment() {
   const auth = useAuth();
-  const { user, isAuthenticated } = useUser();
+  const { user } = useUser();
   const [appointments, setAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const processedTimestamps = new Set();
-  
+  console.log("User database ID:", user.apiResponse.id);
+
   setInterval(() => {
     if (processedTimestamps.size > 100) {
       processedTimestamps.clear();
@@ -29,10 +30,9 @@ export default function CustomerAppointment() {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const customerId = 1;
       setLoadingAppointments(true);
       try {
-        const response = await axios.get(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL}/appointment/customer?customerId=${customerId}`);
+        const response = await axios.get(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL}/appointment/customer?customerId=${user.apiResponse.id}`);
 
         setAppointments(response.data); // Assuming API returns array of appointments
       } catch (error) {

@@ -3,10 +3,11 @@ import { useAuth } from "react-oidc-context";
 import "../../css/customerProfile.css"; 
 import axios from 'axios';
 import apiConfig from '../../config/apiConfig';
+import { useUser } from "../UserContext";
 
 export default function CounsollerProfile() {
   const auth = useAuth();
-
+  const { user } = useUser();
   
   const [customerProfile, setCustomerProfile] = useState({
     first_name: '',
@@ -21,7 +22,7 @@ export default function CounsollerProfile() {
   const [loadingProfile, setLoadingProfile] = useState(false); 
   const [error, setError] = useState('');
 
-  
+  console.log("User database ID:", user.apiResponse.id);
   useEffect(() => {
     const fetchProfile = async () => {
         setLoadingProfile(true);
@@ -30,7 +31,7 @@ export default function CounsollerProfile() {
         //  const username = auth.user?.profile?.preferred_username || auth.user?.profile?.email;
          // const token = auth.user?.access_token;
           
-          const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/counsellor/1`);
+          const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/counsellor/${user.apiResponse.id}`);
           setCustomerProfile(response.data);
  //         window.alert(response.data.age);
  //         window.alert(response.data.first_name);
