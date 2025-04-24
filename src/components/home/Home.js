@@ -85,7 +85,7 @@ export default function Home() {
   
             try {
               const response = await axios.post(apiUrl, payload);
-              console.log("✅ Backend API response: >>>>>>>>>>>>>>>>>>>>>. ", response.data);
+              console.log("Backend API response: >>>>>>>>>>>>>>>>>>>>>. ", response.data);
               saveUser({ ...userData, apiResponse: response.data });
             } catch (error) {
               console.error("Sync failed:", error);
