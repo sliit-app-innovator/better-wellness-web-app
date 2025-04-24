@@ -5,7 +5,7 @@ const apiConfig = {
     MESSAGING_SERVICE_WEB_SOCKET_URL: 'http://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/ws',
     
     AWS_REGION: 'ap-south-1',
-    AWS_LOGOUT_URL: 'http://dev.dlyjgh5gt9knf.amplifyapp.com/',
+    AWS_LOGOUT_URL: 'https://dev.d1z0ebfwofvf1t.amplifyapp.com/',
     AWS_CLIENT_ID: '7u1icmkn6vv97apgrr1du5sbs9',
     AWS_USER_POOL_ID: 'ap-south-1_of6yaS36s',
     AWS_COGNITO_DOMAIN: 'https://ap-south-1of6yas36s.auth.ap-south-1.amazoncognito.com',
