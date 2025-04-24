@@ -1,8 +1,8 @@
 const apiConfig = {
-    USER_SERVICE_API_BASE_URL: 'https://qsdfifp0q7.execute-api.ap-south-1.amazonaws.com/user-service',
-    APPOINTMET_SERVICE_API_BASE_URL: 'https://qsdfifp0q7.execute-api.ap-south-1.amazonaws.com/appointment-service',
-    MESSAGING_SERVICE_CHAT_HISTORY_URL: 'https://qsdfifp0q7.execute-api.ap-south-1.amazonaws.com/messaging-service/history',
-    MESSAGING_SERVICE_WEB_SOCKET_URL: 'http://a8ebb8d2b454345db8d71828a361c0cf-1913399456.ap-south-1.elb.amazonaws.com/ws',
+    USER_SERVICE_API_BASE_URL: 'https://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/user-service',
+    APPOINTMET_SERVICE_API_BASE_URL: 'https://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/appointment-service',
+    MESSAGING_SERVICE_CHAT_HISTORY_URL: 'https://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/messaging-service/history',
+    MESSAGING_SERVICE_WEB_SOCKET_URL: 'http://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/ws',
     
     AWS_REGION: 'ap-south-1',
     AWS_LOGOUT_URL: 'http://dev.dlyjgh5gt9knf.amplifyapp.com/',
