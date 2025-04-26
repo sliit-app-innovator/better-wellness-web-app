@@ -1,4 +1,4 @@
-/*
+/* EKS SETUP */
 const apiConfig = {
     USER_SERVICE_API_BASE_URL: 'https://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/user-service',
     APPOINTMET_SERVICE_API_BASE_URL: 'https://hx0a2pq0ze.execute-api.ap-south-1.amazonaws.com/appointment-service',
@@ -14,8 +14,9 @@ const apiConfig = {
     AWS_REDIRECT_URL : 'https://webhook.site/a93e84eb-60b4-45cc-8bcf-cd778465f90b'
 
 };
-*/
+
 /* LOCAL SETUP */
+/*
 const apiConfig = {
     USER_SERVICE_API_BASE_URL: 'http://localhost:8080/user-service',
     APPOINTMET_SERVICE_API_BASE_URL: 'http://localhost:8081/appointment-service',
@@ -30,5 +31,5 @@ const apiConfig = {
     AWS_AUTHORITY : 'https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_zbLtEa3L7',
     AWS_REDIRECT_URL : 'https://webhook.site/a93e84eb-60b4-45cc-8bcf-cd778465f90b'
 };
-
+*/
 export default apiConfig;
