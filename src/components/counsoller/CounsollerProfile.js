@@ -21,7 +21,6 @@ export default function CounsollerProfile() {
 
   const [loadingProfile, setLoadingProfile] = useState(false); 
   const [error, setError] = useState('');
-
   console.log("User database ID:", user.apiResponse.id);
   useEffect(() => {
     const fetchProfile = async () => {
@@ -58,7 +57,7 @@ export default function CounsollerProfile() {
     return (
       <div className="parent-container-profile">
         <div className="profile-container">
-          <h2 className="profile-title">Your Profile</h2>
+          <h2 className="profile-title">Counsellor Profile</h2>
           <div className="profile-details-grid">
             
             <div className="form-group-inline">
@@ -77,25 +76,19 @@ export default function CounsollerProfile() {
             </div>
 
             <div className="form-group-inline">
-              <label>Age:</label>
-              <input type="text" value={customerProfile.age} readOnly />
+              <label>Specialization:</label>
+              <input type="text" value={customerProfile.specializations} readOnly />
             </div>
 
             <div className="form-group-inline">
-              <label>Created At:</label>
-              <input type="text" value={customerProfile.createdAt} readOnly />
+              <label>Description</label>
+              <textarea value={customerProfile.description} readOnly rows="10" cols="50" />
             </div>
-
+<br/>
             <div className="form-group-inline">
               <label>Last Login:</label>
               <input type="text" value={customerProfile.lastLoginAt} readOnly />
             </div>
-
-            <div className="form-group-inline">
-              <label>Updated At:</label>
-              <input type="text" value={customerProfile.updatedAt} readOnly />
-            </div>
-
           </div>
         </div>
       </div>

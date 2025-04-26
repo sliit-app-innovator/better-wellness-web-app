@@ -8,11 +8,12 @@ import Swal from 'sweetalert2';
 import { FaComments } from 'react-icons/fa';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import { useUser } from "../UserContext";
 let stompClient = null;
 
 export default function CounsollerViewAppointments() {
   const auth = useAuth();
-
+  const { user } = useUser();
   const [appointments, setAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [error, setError] = useState('');
@@ -25,12 +26,12 @@ export default function CounsollerViewAppointments() {
     }
   }, 30000)
 
+  console.log("User database ID:", user.apiResponse.id);
   useEffect(() => {
     const fetchAppointments = async () => {
-      const customerId = 1;
       setLoadingAppointments(true);
       try {
-        const response = await axios.get(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL}/appointment/counsellor?counsellorId=${customerId}`);
+        const response = await axios.get(`${apiConfig.APPOINTMET_SERVICE_API_BASE_URL}/appointment/counsellor?counsellorId=${user.apiResponse.id}`);
 
         setAppointments(response.data); // Assuming API returns array of appointments
       } catch (error) {
@@ -172,7 +173,7 @@ export default function CounsollerViewAppointments() {
           if (input.value.trim() !== '') {
             const messageContent = input.value;
             appendMessage('counsellor', messageContent);
-  
+            console.log("Sending message ..... > 0" + messageContent);
             stompClient.publish({
               destination: '/app/chat.sendMessage',
               body: JSON.stringify({
