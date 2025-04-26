@@ -10,6 +10,9 @@ const apiConfig = {
     AWS_CLIENT_ID: '4jf4c11l04o6ot9sds8f2cd6be',
     AWS_USER_POOL_ID: 'ap-south-1_zbLtEa3L7',
     AWS_COGNITO_DOMAIN: 'https://ap-south-1zbltea3l7.auth.ap-south-1.amazoncognito.com',
+    AWS_AUTHORITY : 'https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_zbLtEa3L7',
+    AWS_REDIRECT_URL : 'https://webhook.site/a93e84eb-60b4-45cc-8bcf-cd778465f90b'
+
 };
 */
 /* LOCAL SETUP */
@@ -24,6 +27,8 @@ const apiConfig = {
     AWS_CLIENT_ID: '4jf4c11l04o6ot9sds8f2cd6be',
     AWS_USER_POOL_ID: 'ap-south-1_zbLtEa3L7',
     AWS_COGNITO_DOMAIN: 'https://ap-south-1zbltea3l7.auth.ap-south-1.amazoncognito.com',
+    AWS_AUTHORITY : 'https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_zbLtEa3L7',
+    AWS_REDIRECT_URL : 'https://webhook.site/a93e84eb-60b4-45cc-8bcf-cd778465f90b'
 };
 
 export default apiConfig;

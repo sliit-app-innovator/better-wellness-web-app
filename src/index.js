@@ -4,11 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "react-oidc-context";
+import apiConfig from './config/apiConfig';
 
 const cognitoAuthConfig = {
-  authority: "https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_zbLtEa3L7",
-  client_id: "4jf4c11l04o6ot9sds8f2cd6be",
-  redirect_uri: "https://webhook.site/a93e84eb-60b4-45cc-8bcf-cd778465f90b",
+  authority: apiConfig.AWS_AUTHORITY,
+  client_id: apiConfig.AWS_CLIENT_ID,
+  redirect_uri: apiConfig.AWS_REDIRECT_URL,
   response_type: "code",
   scope: "email openid phone",
 };
