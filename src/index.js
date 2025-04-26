@@ -6,8 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "react-oidc-context";
 
 const cognitoAuthConfig = {
-  authority: "https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_S22mjWxo3",
-  client_id: "1kmumjamh02jvj0f8v5eq8qrvp",
+  authority: "https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_zbLtEa3L7",
+  client_id: "4jf4c11l04o6ot9sds8f2cd6be",
   redirect_uri: "https://webhook.site/a93e84eb-60b4-45cc-8bcf-cd778465f90b",
   response_type: "code",
   scope: "email openid phone",
