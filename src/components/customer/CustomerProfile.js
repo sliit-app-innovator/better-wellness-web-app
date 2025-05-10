@@ -3,6 +3,7 @@ import { useAuth } from "react-oidc-context";
 import "../../css/customerProfile.css"; 
 import axios from 'axios';
 import apiConfig from '../../config/apiConfig';
+import { useUser } from "../UserContext";
 
 export default function CustomerProfile() {
   const auth = useAuth();
@@ -20,8 +21,10 @@ export default function CustomerProfile() {
 
   const [loadingProfile, setLoadingProfile] = useState(false); 
   const [error, setError] = useState('');
+  const { user } = useUser();
+  console.log("User database ID:", user.apiResponse.id);
 
-  
+
   useEffect(() => {
     const fetchProfile = async () => {
         setLoadingProfile(true);
@@ -29,8 +32,7 @@ export default function CustomerProfile() {
           // Replace API URL as needed
         //  const username = auth.user?.profile?.preferred_username || auth.user?.profile?.email;
          // const token = auth.user?.access_token;
-          
-          const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/customer/1`);
+          const response = await axios.get(`${apiConfig.USER_SERVICE_API_BASE_URL}/customer/${user.apiResponse.id}`);
           setCustomerProfile(response.data);
  //         window.alert(response.data.age);
  //         window.alert(response.data.first_name);

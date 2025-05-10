@@ -3,6 +3,8 @@ import { useAuth } from "react-oidc-context";
 import "../../css/makeAppointment.css"; 
 import axios from 'axios';
 import apiConfig from '../../config/apiConfig';
+import { useUser } from "../UserContext";
+
 
 export default function CustomerNewAppinement() {
   const auth = useAuth();
@@ -22,7 +24,8 @@ export default function CustomerNewAppinement() {
   const [loadingTimes, setLoadingTimes] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const { user } = useUser();
+  console.log("User database ID:", user.apiResponse.id);
   // Fetch Counsellors
   useEffect(() => {
     const fetchCounsellors = async () => {
@@ -113,7 +116,7 @@ const handleSubmit = async (e) => {
     const payload = {
       alias: formData.name,
       counsellorId: selectedCounsellor.id,
-      customerId: 1, // Hardcoded for now
+      customerId: user.apiResponse.id, 
       availabilityId: formData.sessionTime,
       notes: formData.note
     };
@@ -267,6 +270,7 @@ if (auth.isAuthenticated) {
           <div>
             <p><strong>Name:</strong> {selectedCounsellor.firstName} {selectedCounsellor.lastName}</p>
             <p><strong>Specializations:</strong> {selectedCounsellor.specializations}</p>
+            <p><strong>Description:</strong> {selectedCounsellor.description}</p>
 
             {/* Show session details */}
             <br/>

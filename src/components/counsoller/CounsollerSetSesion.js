@@ -3,10 +3,11 @@ import { useAuth } from "react-oidc-context";
 import '../../css/counsollerSetSesion.css';
 import axios from 'axios';
 import apiConfig from '../../config/apiConfig';
+import { useUser } from "../UserContext";
 
 export default function CounsollerSetSesion() {
   const auth = useAuth();
-
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     title: '',
     date: '',
@@ -15,6 +16,7 @@ export default function CounsollerSetSesion() {
     description: ''
   });
 
+  console.log("User database ID:", user.apiResponse.id);
   const [message, setMessage] = useState({ type: '', text: '' });
 
   const handleChange = (e) => {
@@ -34,7 +36,7 @@ export default function CounsollerSetSesion() {
         startTime: formData.startTime,
         endTime: formData.endTime,
         //TODO USER ID
-        counsellorId: 1,
+        counsellorId: user.apiResponse.id,
         sessionDesc: formData.description
       };
 
